@@ -1,4 +1,4 @@
-package com.pocketwatch.annotations;
+package io.pocketwatch.annotations;
 
 /**
  * Common date/time pattern constants for use with validation annotations.
