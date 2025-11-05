@@ -1,5 +1,9 @@
 package io.pocketwatch;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -31,13 +35,13 @@ public final class PocketWatch {
 	        
 	        // Try LocalDate first (for date-only patterns)
 	        try {
-	            java.time.LocalDate localDate = java.time.LocalDate.parse(dateString, formatter);
-	            ZonedDateTime zdt = localDate.atStartOfDay(java.time.ZoneId.systemDefault());
+	            LocalDate localDate = java.time.LocalDate.parse(dateString, formatter);
+	            ZonedDateTime zdt = localDate.atTime(LocalTime.now()).atZone(ZoneId.systemDefault());
 	            return new PocketWatch(zdt);
 	        } catch (DateTimeParseException e) {
 	            // Try LocalDateTime
 	            try {
-	                java.time.LocalDateTime localDateTime = java.time.LocalDateTime.parse(dateString, formatter);
+	                LocalDateTime localDateTime = java.time.LocalDateTime.parse(dateString, formatter);
 	                ZonedDateTime zdt = localDateTime.atZone(java.time.ZoneId.systemDefault());
 	                return new PocketWatch(zdt);
 	            } catch (DateTimeParseException e2) {

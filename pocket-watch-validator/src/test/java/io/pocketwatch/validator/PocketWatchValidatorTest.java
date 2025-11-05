@@ -1,12 +1,13 @@
 package io.pocketwatch.validator;
 
+import static io.pocketwatch.annotations.constants.DatePattern.ISO_DATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import io.pocketwatch.annotations.DatePattern;
+import io.pocketwatch.annotations.FutureDate;
 import io.pocketwatch.annotations.PastDate;
 import io.pocketwatch.annotations.ValidDate;
 
@@ -98,23 +99,80 @@ class PocketWatchValidatorTest {
         // Then
         assertTrue(result.isValid()); // Should be valid with inclusive=true
     }
+    
+    @Test
+    void testFutureDate_Valid() {
+        // Given - date in the past
+        TestEventWithFuture event = new TestEventWithFuture();
+        event.eventDate = "2026-02-24";
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertTrue(result.isValid());
+    }
+    
+    @Test
+    void testFutureDate_Inclusive_Today() {
+        // Given - today's date with inclusive=true
+    	TestEventWithFutureInclusive event = new TestEventWithFutureInclusive();
+        event.eventDate = java.time.LocalDate.now().toString();
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertTrue(result.isValid()); // Should be valid with inclusive=true
+    }
+    
+    @Test
+    void testFutureDate_Invalid() {
+        // Given - today's date with inclusive=true
+    	TestEventWithFutureInclusive event = new TestEventWithFutureInclusive();
+        event.eventDate = java.time.LocalDate.now().minusDays(1).toString();
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertFalse(result.isValid()); 
+        assertEquals(1, result.getErrors().size());
+        assertTrue(result.getErrors().get(0).getMessage().contains("must be in the future"));
+    }
+    
+    
+    
+    static class TestEventWithFuture {
+        @ValidDate
+        @FutureDate(message = "Event date must be in the future")
+        private String eventDate;
+    }
+    
+    
+    static class TestEventWithFutureInclusive {
+        @ValidDate
+        @FutureDate(inclusive = true)
+        private String eventDate;
+    }
+    
 
     // Test classes
     static class TestEventWithPast {
-        @ValidDate(pattern = DatePattern.ISO_DATE)
+        @ValidDate
         @PastDate(message = "Birth date must be in the past")
         private String birthDate;
     }
 
     static class TestEventWithPastInclusive {
-        @ValidDate(pattern = DatePattern.ISO_DATE)
+        @ValidDate
         @PastDate(inclusive = true)
         private String registrationDate;
     }
     
     // Test class
     static class TestEvent {
-        @ValidDate(pattern = DatePattern.ISO_DATE, message = "Start date is invalid")
+        @ValidDate(pattern = ISO_DATE, message = "Start date is invalid")
         private String startDate;
     }
 }

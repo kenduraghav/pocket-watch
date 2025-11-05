@@ -1,6 +1,6 @@
 package io.pocketwatch.validator;
 
-import static io.pocketwatch.annotations.DatePattern.*;
+import static io.pocketwatch.annotations.constants.DatePattern.*;
 
 import java.lang.reflect.Field;
 import java.time.ZonedDateTime;
@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.pocketwatch.PocketWatch;
+import io.pocketwatch.annotations.FutureDate;
 import io.pocketwatch.annotations.PastDate;
 import io.pocketwatch.annotations.ValidDate;
 
@@ -37,6 +38,12 @@ public final class PocketWatchValidator {
 	         // ADD THIS - Check if field has @PastDate annotation
 	            if (field.isAnnotationPresent(PastDate.class)) {
 	                validatePastDateField(object, field, errors);
+	            }
+	            
+	            
+	            // ADD THIS - Check if field has @FutureDate annotation
+	            if (field.isAnnotationPresent(FutureDate.class)) {
+	                validateFutureDateField(object, field, errors);
 	            }
 	        }
 	        
@@ -140,4 +147,57 @@ public final class PocketWatchValidator {
 	        }
 	    }
     
+	    
+	    
+	    
+	    /**
+	     * Validate a single field with @PastDate annotation
+	     */
+	    private static void validateFutureDateField(Object object, Field field, List<ValidationError> errors) {
+	        FutureDate annotation = field.getAnnotation(FutureDate.class);
+	        field.setAccessible(true);
+	        
+	        try {
+	            Object value = field.get(object);
+	            
+	            // Skip if null (let @ValidDate handle required check)
+	            if (value == null || value.toString().isBlank()) {
+	                return;
+	            }
+	            
+	            String fieldName = field.getName();
+	            String dateString = value.toString();
+	            
+	            // Get pattern from @ValidDate if present
+	            String pattern = ISO_DATE;
+	            if (field.isAnnotationPresent(ValidDate.class)) {
+	                pattern = field.getAnnotation(ValidDate.class).pattern();
+	            }
+	            
+	            // Parse the date
+	            PocketWatch parsed = PocketWatch.parse(dateString, pattern);
+	            if (parsed == null) {
+	                return; // Invalid date - @ValidDate will catch this
+	            }
+	            
+	            // Check if date is in the past
+	            ZonedDateTime now = ZonedDateTime.now();
+	            ZonedDateTime fieldDate = parsed.toZonedDateTime();
+	            
+	            boolean isValid = annotation.inclusive() 
+	                ? !fieldDate.isBefore(now)  // Today or after
+	                : fieldDate.isAfter(now); // Only after today
+	            
+	            if (!isValid) {
+	                String message = annotation.message()
+	                    .replace("{field}", fieldName)
+	                    .replace("{value}", dateString);
+	                errors.add(new ValidationError(fieldName, message, value));
+	            }
+	            
+	        } catch (IllegalAccessException e) {
+	            errors.add(new ValidationError(field.getName(), 
+	                "Cannot access field: " + e.getMessage(), null));
+	        }
+	    }
 }
