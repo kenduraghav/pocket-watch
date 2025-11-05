@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import io.pocketwatch.annotations.DatePattern;
+import io.pocketwatch.annotations.PastDate;
 import io.pocketwatch.annotations.ValidDate;
 
 /**
@@ -55,6 +56,60 @@ class PocketWatchValidatorTest {
         // Then
         assertFalse(result.isValid());
         assertEquals(1, result.getErrors().size());
+    }
+    
+    @Test
+    void testPastDate_Valid() {
+        // Given - date in the past
+        TestEventWithPast event = new TestEventWithPast();
+        event.birthDate = "2000-01-01";
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertTrue(result.isValid());
+    }
+
+    @Test
+    void testPastDate_Invalid_FutureDate() {
+        // Given - date in the future
+        TestEventWithPast event = new TestEventWithPast();
+        event.birthDate = "2030-01-01";
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertFalse(result.isValid());
+        assertEquals(1, result.getErrors().size());
+        assertTrue(result.getErrors().get(0).getMessage().contains("must be in the past"));
+    }
+
+    @Test
+    void testPastDate_Inclusive_Today() {
+        // Given - today's date with inclusive=true
+        TestEventWithPastInclusive event = new TestEventWithPastInclusive();
+        event.registrationDate = java.time.LocalDate.now().toString();
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertTrue(result.isValid()); // Should be valid with inclusive=true
+    }
+
+    // Test classes
+    static class TestEventWithPast {
+        @ValidDate(pattern = DatePattern.ISO_DATE)
+        @PastDate(message = "Birth date must be in the past")
+        private String birthDate;
+    }
+
+    static class TestEventWithPastInclusive {
+        @ValidDate(pattern = DatePattern.ISO_DATE)
+        @PastDate(inclusive = true)
+        private String registrationDate;
     }
     
     // Test class
