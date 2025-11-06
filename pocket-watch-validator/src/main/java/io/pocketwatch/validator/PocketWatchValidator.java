@@ -3,6 +3,7 @@ package io.pocketwatch.validator;
 import static io.pocketwatch.annotations.constants.DatePattern.*;
 
 import java.lang.reflect.Field;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,12 +128,12 @@ public final class PocketWatchValidator {
 	            }
 	            
 	            // Check if date is in the past
-	            ZonedDateTime now = ZonedDateTime.now();
-	            ZonedDateTime fieldDate = parsed.toZonedDateTime();
+	            LocalDate today = java.time.LocalDate.now();
+	            LocalDate fieldDate = parsed.toZonedDateTime().toLocalDate();
 	            
 	            boolean isValid = annotation.inclusive() 
-	                ? !fieldDate.isAfter(now)  // Today or before
-	                : fieldDate.isBefore(now); // Only before today
+	                ? !fieldDate.isAfter(today)  // Today or before
+	                : fieldDate.isBefore(today); // Only before today
 	            
 	            if (!isValid) {
 	                String message = annotation.message()
@@ -180,13 +181,13 @@ public final class PocketWatchValidator {
 	                return; // Invalid date - @ValidDate will catch this
 	            }
 	            
-	            // Check if date is in the past
-	            ZonedDateTime now = ZonedDateTime.now();
-	            ZonedDateTime fieldDate = parsed.toZonedDateTime();
+	            // Check if date is in the future
+	            LocalDate today = java.time.LocalDate.now();
+	            LocalDate fieldDate = parsed.toZonedDateTime().toLocalDate();
 	            
 	            boolean isValid = annotation.inclusive() 
-	                ? !fieldDate.isBefore(now)  // Today or after
-	                : fieldDate.isAfter(now); // Only after today
+	                ? !fieldDate.isBefore(today)  // Today or after
+	                : fieldDate.isAfter(today); // Only after today
 	            
 	            if (!isValid) {
 	                String message = annotation.message()

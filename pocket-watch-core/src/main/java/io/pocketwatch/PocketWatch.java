@@ -36,7 +36,7 @@ public final class PocketWatch {
 	        // Try LocalDate first (for date-only patterns)
 	        try {
 	            LocalDate localDate = java.time.LocalDate.parse(dateString, formatter);
-	            ZonedDateTime zdt = localDate.atTime(LocalTime.now()).atZone(ZoneId.systemDefault());
+	            ZonedDateTime zdt = localDate.atStartOfDay(ZoneId.systemDefault());
 	            return new PocketWatch(zdt);
 	        } catch (DateTimeParseException e) {
 	            // Try LocalDateTime

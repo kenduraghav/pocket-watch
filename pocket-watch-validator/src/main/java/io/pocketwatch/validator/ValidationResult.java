@@ -12,29 +12,29 @@ import java.util.*;
  */
 public final class ValidationResult {
 
-private final List<ValidationError> errors;
-    
-    private ValidationResult(List<ValidationError> errors) {
-        this.errors = Collections.unmodifiableList(errors);
-    }
-    
-    public static ValidationResult success() {
-        return new ValidationResult(Collections.emptyList());
-    }
-    
-    public static ValidationResult of(List<ValidationError> errors) {
-        return new ValidationResult(errors);
-    }
-    
-    public boolean isValid() {
-        return errors.isEmpty();
-    }
-    
-    public List<ValidationError> getErrors() {
-        return errors;
-    }
-    
-    public boolean hasErrors() {
-        return !errors.isEmpty();
-    }
+	private final List<ValidationError> errors;
+
+	private ValidationResult(List<ValidationError> errors) {
+		this.errors = Collections.unmodifiableList(errors);
+	}
+
+	public static ValidationResult success() {
+		return new ValidationResult(Collections.emptyList());
+	}
+
+	public static ValidationResult of(List<ValidationError> errors) {
+		return new ValidationResult(errors);
+	}
+
+	public boolean isValid() {
+		return errors.isEmpty();
+	}
+
+	public List<ValidationError> getErrors() {
+		return errors;
+	}
+
+	public boolean hasErrors() {
+		return !errors.isEmpty();
+	}
 }
