@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
+import io.pocketwatch.annotations.DateRange;
 import io.pocketwatch.annotations.FutureDate;
 import io.pocketwatch.annotations.PastDate;
 import io.pocketwatch.annotations.ValidDate;
@@ -142,6 +145,51 @@ class PocketWatchValidatorTest {
     }
     
     
+    @Test
+    void testDateRange_valid() {
+    	String checkInDate= LocalDate.now().plusDays(2).toString();
+    	TestEventDateRange  event = new TestEventDateRange(checkInDate);
+    	
+    	 // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertTrue(result.isValid());
+    }
+    
+    
+    @Test
+    void testDateRange_Invalid() {
+    	String checkInDate=LocalDate.now().toString();
+    	TestEventDateRange  event = new TestEventDateRange(checkInDate);
+    	
+    	 // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        assertFalse(result.isValid()); 
+        assertEquals(1, result.getErrors().size());
+        assertTrue(result.hasErrors());
+    }
+    
+    
+    @Test
+    void testDateRange_BeyondMaxDate() {
+    	String checkInDate=LocalDate.now().plusDays(10).toString();
+    	TestEventDateRange  event = new TestEventDateRange(checkInDate);
+    	
+    	 // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        System.out.println(result.getErrors().get(0).getMessage());
+        assertFalse(result.isValid()); 
+        assertEquals(1, result.getErrors().size());
+        assertTrue(result.hasErrors());
+    }
+    
+    
+    record TestEventDateRange(
+    		@DateRange(minDaysFromNow = 1, maxDaysFromNow = 8)
+    		String checkInDate) {}
+    
     
     static class TestEventWithFuture {
         @ValidDate
@@ -174,5 +222,8 @@ class PocketWatchValidatorTest {
     static class TestEvent {
         @ValidDate(pattern = ISO_DATE, message = "Start date is invalid")
         private String startDate;
+        
+        @DateRange(minDaysFromNow = 1, maxDaysFromNow = 5)
+        private String checkInDate;
     }
 }
