@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import io.pocketwatch.annotations.DateRange;
 import io.pocketwatch.annotations.FutureDate;
 import io.pocketwatch.annotations.PastDate;
+import io.pocketwatch.annotations.PlusDays;
 import io.pocketwatch.annotations.ValidDate;
 
 /**
@@ -183,6 +184,69 @@ class PocketWatchValidatorTest {
         assertFalse(result.isValid()); 
         assertEquals(1, result.getErrors().size());
         assertTrue(result.hasErrors());
+    }
+    
+    
+    @Test
+    void testPlusDays_Valid() {
+        // Given
+        TestEventWithPlusDays event = new TestEventWithPlusDays();
+        event.startDate = "2025-11-04";
+        event.endDate = "2025-11-11";  // 7 days after
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertTrue(result.isValid());
+    }
+
+    @Test
+    void testPlusDays_Invalid() {
+        // Given
+        TestEventWithPlusDays event = new TestEventWithPlusDays();
+        event.startDate = "2025-11-04";
+        event.endDate = "2025-11-10";  // Only 6 days - wrong!
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertFalse(result.isValid());
+        assertEquals(1, result.getErrors().size());
+    }
+
+    @Test
+    void testPlusDays_NegativeDays() {
+        // Given - subtract days
+        TestEventWithNegativeDays event = new TestEventWithNegativeDays();
+        event.eventDate = "2025-11-11";
+        event.bookingDeadline = "2025-11-04";  // 7 days before
+        
+        // When
+        ValidationResult result = PocketWatchValidator.validate(event);
+        
+        // Then
+        assertTrue(result.isValid());
+    }
+
+    // Test classes
+    static class TestEventWithPlusDays {
+        @ValidDate(pattern = ISO_DATE)
+        private String startDate;
+        
+        @ValidDate
+        @PlusDays(from = "startDate", days = 7)
+        private String endDate;
+    }
+
+    static class TestEventWithNegativeDays {
+        @ValidDate
+        private String eventDate;
+        
+        @ValidDate
+        @PlusDays(from = "eventDate", days = -7)
+        private String bookingDeadline;
     }
     
     

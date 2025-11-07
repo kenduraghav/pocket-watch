@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface DateRange {
     
-    String message() default "{field} must be between {min} and {max} days from now";
+    String message() default "{field} must be between {min} and {max} days from {now}";
     
     int minDaysFromNow() default 0;
     
