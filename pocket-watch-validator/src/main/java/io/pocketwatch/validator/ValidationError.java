@@ -8,28 +8,11 @@ import java.util.Objects;
  * @author PocketWatch
  * @since 1.0.0
  */
-public final class ValidationError {
-
-    private final String fieldName;
-    private final String message;
-    private final Object rejectedValue;
-
-    public ValidationError(String fieldName, String message, Object rejectedValue) {
-        this.fieldName = Objects.requireNonNull(fieldName, "fieldName must not be null");
-        this.message = Objects.requireNonNull(message, "message must not be null");
-        this.rejectedValue = rejectedValue;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Object getRejectedValue() {
-        return rejectedValue;
+public record ValidationError(String fieldName, String message, Object rejectedValue) {
+	
+	public ValidationError {
+        fieldName = Objects.requireNonNull(fieldName, "fieldName must not be null");
+        message = Objects.requireNonNull(message, "message must not be null");
     }
 
     @Override
