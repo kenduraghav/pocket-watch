@@ -4,7 +4,6 @@ import static io.pocketwatch.annotations.constants.DatePattern.ISO_DATE;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +16,7 @@ import io.pocketwatch.annotations.PlusDays;
 import io.pocketwatch.annotations.ValidDate;
 import io.pocketwatch.annotations.ValidTimeZone;
 import io.pocketwatch.annotations.constants.DatePattern;
+import io.pocketwatch.validators.ValidDateValidator;
 
 /**
  * Central entry point for runtime validation.
@@ -24,6 +24,13 @@ import io.pocketwatch.annotations.constants.DatePattern;
  * <p>Scans annotated fields and aggregates all ValidationErrors.</p>
  */
 public final class PocketWatchValidator {
+	
+	private static final ValidatorRegistry registry = new ValidatorRegistry();
+	
+	
+	static {
+		registry.register(ValidDate.class, new ValidDateValidator());
+	}
 
 	public static ValidationResult validate(Object object) {
 		if (object == null) {
@@ -38,7 +45,9 @@ public final class PocketWatchValidator {
 		for (Field field : fields) {
 			// Check if field has @ValidDate annotation
 			if (field.isAnnotationPresent(ValidDate.class)) {
-				validateDateField(object, field, errors);
+				ValidDate annotation = field.getAnnotation(ValidDate.class);
+			    ValidDateValidator validator = (ValidDateValidator) registry.get(ValidDate.class);
+			    validator.validate(object, field, annotation, errors);
 			}
 
 			// ADD THIS - Check if field has @PastDate annotation
@@ -69,56 +78,6 @@ public final class PocketWatchValidator {
 
 		return ValidationResult.of(errors);
 	}
-
-
-
-	
-
-
-	/**
-	 * Validate a single field with @ValidDate annotation
-	 */
-	private static void validateDateField(Object object, Field field, List<ValidationError> errors) {
-		ValidDate annotation = field.getAnnotation(ValidDate.class);
-		field.setAccessible(true);
-
-		try {
-			Object value = field.get(object);
-			String fieldName = field.getName();
-
-			// Check if required
-			if (annotation.required() && (value == null || value.toString().isBlank())) {
-				String message = annotation.message()
-						.replace("{field}", fieldName)
-						.replace("{pattern}", annotation.pattern())
-						.replace("{value}", "null");
-				errors.add(new ValidationError(fieldName, message, null));
-				return;
-			}
-
-			// Skip if not required and null
-			if (!annotation.required() && value == null) {
-				return;
-			}
-
-			// Try to parse with pattern
-			String dateString = value.toString();
-			PocketWatch parsed = PocketWatch.parse(dateString, annotation.pattern());
-
-			if (parsed == null) {
-				String message = annotation.message()
-						.replace("{field}", fieldName)
-						.replace("{pattern}", annotation.pattern())
-						.replace("{value}", dateString);
-				errors.add(new ValidationError(fieldName, message, value));
-			}
-
-		} catch (IllegalAccessException e) {
-			errors.add(new ValidationError(field.getName(), 
-					"Cannot access field: " + e.getMessage(), null));
-		}
-	}
-
 
 
 	/**
