@@ -4,6 +4,7 @@ import static io.pocketwatch.annotations.constants.DatePattern.ISO_DATE;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import io.pocketwatch.annotations.FutureDate;
 import io.pocketwatch.annotations.PastDate;
 import io.pocketwatch.annotations.PlusDays;
 import io.pocketwatch.annotations.ValidDate;
+import io.pocketwatch.annotations.ValidTimeZone;
 import io.pocketwatch.annotations.constants.DatePattern;
 
 /**
@@ -59,11 +61,18 @@ public final class PocketWatchValidator {
 			if (field.isAnnotationPresent(PlusDays.class)) {
 			    validatePlusDaysField(object, field, errors);
 			}
+			
+			if (field.isAnnotationPresent(ValidTimeZone.class)) {
+			    validateTimeZone(object, field, errors);
+			}
 		}
 
 		return ValidationResult.of(errors);
 	}
 
+
+
+	
 
 
 	/**
@@ -335,4 +344,40 @@ public final class PocketWatchValidator {
 	            "Cannot access field", null));
 	    }
 	}
+	
+	
+	private static void validateTimeZone(Object object, Field field, List<ValidationError> errors) {
+		ValidTimeZone annotation = field.getAnnotation(ValidTimeZone.class);
+		field.setAccessible(true);
+
+		try {
+			String fieldName = field.getName();
+			boolean __isRequired__ = annotation.required();
+			Object value = field.get(object);
+			if(value == null  || value.toString().isBlank()) {
+				 if (__isRequired__) {
+			            String message = annotation.message()
+			                .replace("{field}", fieldName);
+			            errors.add(new ValidationError(fieldName, message, null));
+			        }
+			        return;
+			}
+			
+			// Validate timezone
+		    String timezoneId = value.toString();
+		    try {
+		        java.time.ZoneId.of(timezoneId);  // Throws if invalid
+		    } catch (java.time.DateTimeException e) {
+		        String message = annotation.message()
+		            .replace("{field}", fieldName)
+		            .replace("{value}", timezoneId);
+		        errors.add(new ValidationError(fieldName, message, value));
+		    }
+
+		} catch (IllegalAccessException e) {
+			errors.add(new ValidationError(field.getName(), 
+			        "Cannot access field", null));
+		}
+	}
+
 }

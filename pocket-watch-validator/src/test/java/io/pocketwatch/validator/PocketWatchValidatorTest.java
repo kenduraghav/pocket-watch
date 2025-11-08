@@ -14,6 +14,7 @@ import io.pocketwatch.annotations.FutureDate;
 import io.pocketwatch.annotations.PastDate;
 import io.pocketwatch.annotations.PlusDays;
 import io.pocketwatch.annotations.ValidDate;
+import io.pocketwatch.annotations.ValidTimeZone;
 
 /**
  * Test for @ValidDate validation
@@ -228,6 +229,67 @@ class PocketWatchValidatorTest {
         
         // Then
         assertTrue(result.isValid());
+    }
+    
+    
+    @Test
+    void testValidTimeZone() {
+    	
+    	TestEventWithValidTimeZone event = new TestEventWithValidTimeZone();
+    	
+    	event.timeZone = "Asia/Kolkata";
+    	
+    	ValidationResult result = PocketWatchValidator.validate(event);
+    	
+    	assertTrue(result.isValid());
+    	
+    }
+    
+    
+    @Test
+    void testValidTimeZoneWithNullValue() {
+    	
+    	TestEventWithValidTimeZone event = new TestEventWithValidTimeZone();
+    	
+    	event.timeZone = null;
+    	
+    	ValidationResult result = PocketWatchValidator.validate(event);
+    	
+    	assertFalse(result.isValid());
+    	
+    }
+    
+    @Test
+    void testValidTimeZoneWithOffSetFormat() {
+    	TestEventWithValidTimeZone event = new TestEventWithValidTimeZone();
+    	
+    	event.timeZone = "+05:30";
+    	
+    	ValidationResult result = PocketWatchValidator.validate(event);
+    	
+    	assertTrue(result.isValid());
+    	
+    }
+    
+    
+    @Test
+    void testInValidTimeZone() {
+    	
+    	TestEventWithValidTimeZone event = new TestEventWithValidTimeZone();
+    	
+    	event.timeZone = "IST";
+    	
+    	ValidationResult result = PocketWatchValidator.validate(event);
+    	
+    	assertFalse(result.isValid());
+    	
+    }
+    
+    
+    static class TestEventWithValidTimeZone {
+    	
+    	@ValidTimeZone
+    	String timeZone;
     }
 
     // Test classes
