@@ -11,8 +11,6 @@ public class TimeZoneValidator implements FieldValidator<ValidTimeZone> {
 
 	@Override
 	public void validate(Object obj, Field field, ValidTimeZone annotation, List<ValidationError> errors) {
-		field.setAccessible(true);
-
 		try {
 			String fieldName = field.getName();
 			boolean __isRequired__ = annotation.required();
@@ -34,12 +32,11 @@ public class TimeZoneValidator implements FieldValidator<ValidTimeZone> {
 				String message = annotation.message()
 						.replace("{field}", fieldName)
 						.replace("{value}", timezoneId);
-				errors.add(new ValidationError(fieldName, message, value));
+				addError(errors, field, message, value);
 			}
 
 		} catch (IllegalAccessException e) {
-			errors.add(new ValidationError(field.getName(), 
-					"Cannot access field", null));
+			addError(errors, field, "Cannot access field: " + e.getMessage(), null);
 		}
 	}	
 

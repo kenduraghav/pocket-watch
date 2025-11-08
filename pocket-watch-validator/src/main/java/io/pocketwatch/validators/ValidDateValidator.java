@@ -12,9 +12,6 @@ public class ValidDateValidator implements FieldValidator<ValidDate> {
 
 	@Override
 	public void validate(Object obj, Field field, ValidDate annotation, List<ValidationError> errors) {
-		annotation = field.getAnnotation(ValidDate.class);
-		field.setAccessible(true);
-
 		try {
 			Object value = field.get(obj);
 			String fieldName = field.getName();
@@ -43,12 +40,11 @@ public class ValidDateValidator implements FieldValidator<ValidDate> {
 						.replace("{field}", fieldName)
 						.replace("{pattern}", annotation.pattern())
 						.replace("{value}", dateString);
-				errors.add(new ValidationError(fieldName, message, value));
+				addError(errors, field, message, value);
 			}
 
 		} catch (IllegalAccessException e) {
-			errors.add(new ValidationError(field.getName(), 
-					"Cannot access field: " + e.getMessage(), null));
+			addError(errors, field, "Cannot access field: " + e.getMessage(), null);
 		}
 	}
 

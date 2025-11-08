@@ -19,8 +19,6 @@ public class PastDateValidator implements FieldValidator<PastDate> {
 	 */
 	@Override
 	public void validate(Object obj, Field field, PastDate annotation, List<ValidationError> errors) {
-		field.setAccessible(true);
-
 		try {
 			Object value = field.get(obj);
 
@@ -56,12 +54,11 @@ public class PastDateValidator implements FieldValidator<PastDate> {
 				String message = annotation.message()
 						.replace("{field}", fieldName)
 						.replace("{value}", dateString);
-				errors.add(new ValidationError(fieldName, message, value));
+				addError(errors, field, message, value);
 			}
 
 		} catch (IllegalAccessException e) {
-			errors.add(new ValidationError(field.getName(), 
-					"Cannot access field: " + e.getMessage(), null));
+			addError(errors, field, "Cannot access field: " + e.getMessage(), null);
 		}
 	}
 

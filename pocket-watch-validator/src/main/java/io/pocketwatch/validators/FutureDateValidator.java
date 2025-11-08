@@ -16,8 +16,6 @@ public class FutureDateValidator implements FieldValidator<FutureDate> {
 
 	@Override
 	public void validate(Object obj, Field field, FutureDate annotation, List<ValidationError> errors) {
-		field.setAccessible(true);
-
 		try {
 			Object value = field.get(obj);
 
@@ -53,12 +51,11 @@ public class FutureDateValidator implements FieldValidator<FutureDate> {
 				String message = annotation.message()
 						.replace("{field}", fieldName)
 						.replace("{value}", dateString);
-				errors.add(new ValidationError(fieldName, message, value));
+				addError(errors, field, message, value);
 			}
 
 		} catch (IllegalAccessException e) {
-			errors.add(new ValidationError(field.getName(), 
-					"Cannot access field: " + e.getMessage(), null));
+			addError(errors, field, "Cannot access field: " + e.getMessage(), null);
 		}
 	}
 

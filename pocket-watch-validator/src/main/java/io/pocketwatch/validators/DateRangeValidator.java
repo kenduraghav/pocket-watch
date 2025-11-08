@@ -17,8 +17,6 @@ public class DateRangeValidator implements FieldValidator<DateRange>{
 
 	@Override
 	public void validate(Object obj, Field field, DateRange annotation, List<ValidationError> errors) {
-		field.setAccessible(true);
-
 		try {
 
 			Object value = field.get(obj);
@@ -54,13 +52,12 @@ public class DateRangeValidator implements FieldValidator<DateRange>{
 						.replace("{min}", String.valueOf(annotation.minDaysFromNow()))
 						.replace("{max}", String.valueOf(annotation.maxDaysFromNow()))
 						.replace("{now}", today.format(DateTimeFormatter.ofPattern(DatePattern.SIMPLE_DATE)));
-				errors.add(new ValidationError(fieldName, message, value));
+				addError(errors, field, message, value);
 			}
 
 
 		}catch(IllegalAccessException e) {
-			errors.add(new ValidationError(field.getName(), 
-					"Cannot access field: " + e.getMessage(), null));
+			addError(errors, field, "Cannot access field: " + e.getMessage(), null);
 		}
 	}
 
