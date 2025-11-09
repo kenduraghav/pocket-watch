@@ -1,6 +1,6 @@
 package io.pocketwatch.validators;
 
-import static io.pocketwatch.annotations.constants.DatePattern.ISO_DATE;
+import static io.pocketwatch.constants.DatePattern.ISO_DATE;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;

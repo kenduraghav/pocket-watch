@@ -35,17 +35,17 @@
 		<dependencies>
 			<!-- Internal modules -->
 			<dependency>
-				<groupId>com.pocketwatch</groupId>
+				<groupId>io.pocketwatch</groupId>
 				<artifactId>pocket-watch-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.pocketwatch</groupId>
+				<groupId>io.pocketwatch</groupId>
 				<artifactId>pocket-watch-annotations</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.pocketwatch</groupId>
+				<groupId>io.pocketwatch</groupId>
 				<artifactId>pocket-watch-validator</artifactId>
 				<version>${project.version}</version>
 			</dependency>

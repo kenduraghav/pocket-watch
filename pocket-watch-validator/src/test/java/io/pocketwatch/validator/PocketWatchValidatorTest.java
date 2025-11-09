@@ -1,6 +1,6 @@
 package io.pocketwatch.validator;
 
-import static io.pocketwatch.annotations.constants.DatePattern.ISO_DATE;
+import static io.pocketwatch.constants.DatePattern.ISO_DATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

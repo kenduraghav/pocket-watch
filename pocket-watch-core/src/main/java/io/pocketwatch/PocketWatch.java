@@ -7,6 +7,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+import io.pocketwatch.constants.DatePattern;
+
 /**
  * Core PocketWatch API - Minimal version for validation
  */
@@ -53,6 +55,10 @@ public final class PocketWatch {
 	        return null;  // Invalid date
 	    }
 	}
+	
+	public static PocketWatch parse(String dateString) {
+        return parse(dateString, DatePattern.ISO_DATE);
+    }
 	
 	
     public ZonedDateTime toZonedDateTime() {

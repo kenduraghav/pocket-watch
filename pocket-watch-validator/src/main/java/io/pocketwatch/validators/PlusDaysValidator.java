@@ -7,7 +7,7 @@ import java.util.List;
 import io.pocketwatch.PocketWatch;
 import io.pocketwatch.annotations.PlusDays;
 import io.pocketwatch.annotations.ValidDate;
-import io.pocketwatch.annotations.constants.DatePattern;
+import io.pocketwatch.constants.DatePattern;
 import io.pocketwatch.validator.FieldValidator;
 import io.pocketwatch.validator.ValidationError;
 

@@ -1,6 +1,6 @@
 package io.pocketwatch.annotations;
 
-import static io.pocketwatch.annotations.constants.DatePattern.ISO_DATE;
+import static io.pocketwatch.constants.DatePattern.ISO_DATE;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
