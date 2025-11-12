@@ -3,11 +3,12 @@ package io.pocketwatch.validators;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import io.pocketwatch.PocketWatch;
 import io.pocketwatch.annotations.PlusDays;
 import io.pocketwatch.annotations.ValidDate;
-import io.pocketwatch.annotations.constants.DatePattern;
+import io.pocketwatch.constants.DatePattern;
 import io.pocketwatch.validator.FieldValidator;
 import io.pocketwatch.validator.ValidationError;
 
@@ -38,12 +39,12 @@ public class PlusDaysValidator implements FieldValidator<PlusDays> {
 			}
 
 			// Parse source date and add days
-			PocketWatch fromDate = PocketWatch.parse(fromValue.toString(), pattern);
-			if (fromDate == null) {
+			Optional<PocketWatch> fromDate = PocketWatch.tryParse(fromValue.toString(), pattern);
+			if (fromDate.isEmpty()) {
 				return; // Invalid source date
 			}
 
-			LocalDate expectedDate = fromDate.toZonedDateTime().toLocalDate()
+			LocalDate expectedDate = fromDate.get().toLocalDate()
 					.plusDays(annotation.days());
 
 			// Get actual field value
@@ -53,12 +54,12 @@ public class PlusDaysValidator implements FieldValidator<PlusDays> {
 			}
 
 			// Parse actual value
-			PocketWatch actualDate = PocketWatch.parse(value.toString(), pattern);
+			Optional<PocketWatch> actualDate = PocketWatch.tryParse(value.toString(), pattern);
 			if (actualDate == null) {
 				return; // Invalid format - @ValidDate handles this
 			}
 
-			LocalDate actualLocalDate = actualDate.toZonedDateTime().toLocalDate();
+			LocalDate actualLocalDate = actualDate.get().toLocalDate();
 
 			// Compare
 			if (!actualLocalDate.equals(expectedDate)) {

@@ -1,6 +1,6 @@
 package io.pocketwatch.validator;
 
-import static io.pocketwatch.annotations.constants.DatePattern.ISO_DATE;
+import static io.pocketwatch.constants.DatePattern.ISO_DATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,7 +47,7 @@ class PocketWatchValidatorTest {
         // Then
         assertFalse(result.isValid());
         assertEquals(1, result.getErrors().size());
-        assertEquals("startDate", result.getErrors().get(0).getFieldName());
+        assertEquals("startDate", result.getErrors().get(0).fieldName());
     }
     
     @Test
@@ -89,7 +89,7 @@ class PocketWatchValidatorTest {
         // Then
         assertFalse(result.isValid());
         assertEquals(1, result.getErrors().size());
-        assertTrue(result.getErrors().get(0).getMessage().contains("must be in the past"));
+        assertTrue(result.getErrors().get(0).message().contains("must be in the past"));
     }
 
     @Test
@@ -143,7 +143,7 @@ class PocketWatchValidatorTest {
         // Then
         assertFalse(result.isValid()); 
         assertEquals(1, result.getErrors().size());
-        assertTrue(result.getErrors().get(0).getMessage().contains("must be in the future"));
+        assertTrue(result.getErrors().get(0).message().contains("must be in the future"));
     }
     
     
@@ -181,7 +181,7 @@ class PocketWatchValidatorTest {
     	
     	 // When
         ValidationResult result = PocketWatchValidator.validate(event);
-        System.out.println(result.getErrors().get(0).getMessage());
+        System.out.println(result.getErrors().get(0).message());
         assertFalse(result.isValid()); 
         assertEquals(1, result.getErrors().size());
         assertTrue(result.hasErrors());

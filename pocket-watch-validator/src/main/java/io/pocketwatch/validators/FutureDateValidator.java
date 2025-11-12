@@ -1,10 +1,11 @@
 package io.pocketwatch.validators;
 
-import static io.pocketwatch.annotations.constants.DatePattern.ISO_DATE;
+import static io.pocketwatch.constants.DatePattern.ISO_DATE;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import io.pocketwatch.PocketWatch;
 import io.pocketwatch.annotations.FutureDate;
@@ -34,14 +35,14 @@ public class FutureDateValidator implements FieldValidator<FutureDate> {
 			}
 
 			// Parse the date
-			PocketWatch parsed = PocketWatch.parse(dateString, pattern);
-			if (parsed == null) {
+			Optional<PocketWatch> parsed = PocketWatch.tryParse(dateString, pattern);
+			if (parsed.isEmpty()) {
 				return; // Invalid date - @ValidDate will catch this
 			}
 
 			// Check if date is in the future
 			LocalDate today = java.time.LocalDate.now();
-			LocalDate fieldDate = parsed.toZonedDateTime().toLocalDate();
+			LocalDate fieldDate = parsed.get().toLocalDate();
 
 			boolean isValid = annotation.inclusive() 
 					? !fieldDate.isBefore(today)  // Today or after

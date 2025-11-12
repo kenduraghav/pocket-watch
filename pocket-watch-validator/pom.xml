@@ -19,13 +19,11 @@
 		<dependency>
 			<groupId>io.pocketwatch</groupId>
      		 <artifactId>pocket-watch-core</artifactId>
-     		 <version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>io.pocketwatch</groupId>
 			<artifactId>pocket-watch-annotations</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 
 		<!-- Logging -->

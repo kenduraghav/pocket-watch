@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,7 +26,10 @@ public final class PocketWatchValidator {
      * @return a ValidationResult containing success or failure with errors
      */
 	public static ValidationResult validate(Object object) {
-		 Objects.requireNonNull(object, "Object to validate cannot be null");
+		
+		if(object== null) {
+			 throw new IllegalArgumentException("Object to validate cannot be null" + object);
+		}
 
 		List<ValidationError> errors = new ArrayList<>();
 
