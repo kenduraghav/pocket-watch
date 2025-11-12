@@ -5,6 +5,7 @@ import static io.pocketwatch.constants.DatePattern.ISO_DATE;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import io.pocketwatch.PocketWatch;
 import io.pocketwatch.annotations.PastDate;
@@ -37,14 +38,14 @@ public class PastDateValidator implements FieldValidator<PastDate> {
 			}
 
 			// Parse the date
-			PocketWatch parsed = PocketWatch.parse(dateString, pattern);
-			if (parsed == null) {
+			Optional<PocketWatch> parsed = PocketWatch.tryParse(dateString, pattern);
+			if (parsed.isEmpty()) {
 				return; // Invalid date - @ValidDate will catch this
 			}
 
 			// Check if date is in the past
 			LocalDate today = java.time.LocalDate.now();
-			LocalDate fieldDate = parsed.toZonedDateTime().toLocalDate();
+			LocalDate fieldDate = parsed.get().toLocalDate();
 
 			boolean isValid = annotation.inclusive() 
 					? !fieldDate.isAfter(today)  // Today or before

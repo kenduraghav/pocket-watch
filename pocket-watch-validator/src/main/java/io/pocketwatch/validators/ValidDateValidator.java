@@ -2,6 +2,7 @@ package io.pocketwatch.validators;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 
 import io.pocketwatch.PocketWatch;
 import io.pocketwatch.annotations.ValidDate;
@@ -33,9 +34,9 @@ public class ValidDateValidator implements FieldValidator<ValidDate> {
 
 			// Try to parse with pattern
 			String dateString = value.toString();
-			PocketWatch parsed = PocketWatch.parse(dateString, annotation.pattern());
+			Optional<PocketWatch> parsed = PocketWatch.tryParse(dateString, annotation.pattern());
 
-			if (parsed == null) {
+			if (parsed.isEmpty()) {
 				String message = annotation.message()
 						.replace("{field}", fieldName)
 						.replace("{pattern}", annotation.pattern())

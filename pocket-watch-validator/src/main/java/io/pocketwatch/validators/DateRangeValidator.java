@@ -4,12 +4,12 @@ import static io.pocketwatch.constants.DatePattern.ISO_DATE;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import io.pocketwatch.PocketWatch;
 import io.pocketwatch.annotations.DateRange;
-import io.pocketwatch.constants.DatePattern;
+import io.pocketwatch.annotations.ValidDate;
 import io.pocketwatch.validator.FieldValidator;
 import io.pocketwatch.validator.ValidationError;
 
@@ -31,27 +31,27 @@ public class DateRangeValidator implements FieldValidator<DateRange>{
 
 			// Get pattern from @ValidDate if present
 			String pattern = ISO_DATE;
-			if (field.isAnnotationPresent(DateRange.class)) {
-				pattern = field.getAnnotation(DateRange.class).pattern();
+			if (field.isAnnotationPresent(ValidDate.class)) {
+				pattern = field.getAnnotation(ValidDate.class).pattern();
 			}
 
 			// Parse the date
-			PocketWatch parsed = PocketWatch.parse(dateString, pattern);
-			if (parsed == null) {
+			Optional<PocketWatch> parsed = PocketWatch.tryParse(dateString, pattern);
+			if (parsed.isEmpty()) {
 				return; // Invalid date - @ValidDate will catch this
 			}
 
 			LocalDate today = LocalDate.now();
 			LocalDate minDate = today.plusDays(annotation.minDaysFromNow());
 			LocalDate maxDate = today.plusDays(annotation.maxDaysFromNow());
-			LocalDate fieldDate = parsed.toZonedDateTime().toLocalDate();
+			LocalDate fieldDate = parsed.get().toLocalDate();
 
 			if(fieldDate.isBefore(minDate) || fieldDate.isAfter(maxDate)) {
 				String message = annotation.message()
 						.replace("{field}", fieldName)
-						.replace("{min}", String.valueOf(annotation.minDaysFromNow()))
-						.replace("{max}", String.valueOf(annotation.maxDaysFromNow()))
-						.replace("{now}", today.format(DateTimeFormatter.ofPattern(DatePattern.SIMPLE_DATE)));
+						.replace("{min}",minDate.toString())
+						.replace("{max}", maxDate.toString())
+						.replace("{value}", dateString);
 				addError(errors, field, message, value);
 			}
 

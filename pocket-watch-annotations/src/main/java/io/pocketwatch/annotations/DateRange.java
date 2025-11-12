@@ -1,8 +1,6 @@
 package io.pocketwatch.annotations;
 
 
-import static io.pocketwatch.constants.DatePattern.ISO_DATE;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,16 +12,11 @@ import java.lang.annotation.Target;
 @Documented
 public @interface DateRange {
     
-    String message() default "{field} must be between {min} and {max} days from {now}";
+    String message() default "{field} must be between {min} and {max} days from {value}";
     
     int minDaysFromNow() default 0;
     
     int maxDaysFromNow() default 365;
     
-    /**
-     * Date pattern to validate against.
-     * Use DatePattern constants or custom pattern.
-     */
-    String pattern() default ISO_DATE;
-    
+    	
 }
