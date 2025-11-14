@@ -7,7 +7,7 @@
 
 	<groupId>io.pocketwatch</groupId>
 	<artifactId>pocket-watch</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>0.9.0</version>
 	<packaging>pom</packaging>
 
 	<name>pocket-watch</name>
